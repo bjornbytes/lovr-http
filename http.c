@@ -872,7 +872,13 @@ int l_http_destroy(lua_State* L) {
   return 0;
 }
 
-int luaopen_http(lua_State* L) {
+#ifdef _WIN32
+#define HTTP_EXPORT __declspec(dllexport)
+#else
+#define HTTP_EXPORT __attribute__((visibility("default")))
+#endif
+
+HTTP_EXPORT int luaopen_http(lua_State* L) {
   http_init();
 
   lua_newtable(L);
