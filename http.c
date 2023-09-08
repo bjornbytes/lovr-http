@@ -134,8 +134,8 @@ static bool http_request(http_request_t* req, http_response_t* res) {
     char* header = NULL;
     size_t capacity = 0;
     for (uint32_t i = 0; i < req->headerCount; i++) {
-      const char* name = *req->headers++;
-      const char* value = *req->headers++;
+      const char* name = req->headers[2 * i + 0];
+      const char* value = req->headers[2 * i + 1];
       const char* format = "%s: %s\r\n";
       int length = snprintf(NULL, 0, format, name, value);
       if (length > UINT32_MAX) continue;
