@@ -320,17 +320,17 @@ static bool http_request(http_request_t* request, http_response_t* response) {
     jobject joutput = (*jni)->CallObjectMethod(jni, jconnection, jURLConnection_getOutputStream);
     if (handleException(jni, response, "failed to write request data")) return false;
 
-    // joutput.write(request->data);
     jbyteArray jarray = (*jni)->NewByteArray(jni, request->size);
     if (handleException(jni, response, "out of memory")) return false;
 
+    // joutput.write(request->data);
     jbyte* bytes = (*jni)->GetByteArrayElements(jni, jarray, NULL);
     memcpy(bytes, request->data, request->size);
+    (*jni)->ReleaseByteArrayElements(jni, jarray, bytes, 0);
     jclass jOutputStream = (*jni)->FindClass(jni, "java/io/OutputStream");
     jmethodID jOutputStream_write = (*jni)->GetMethodID(jni, jOutputStream, "write", "([B)V");
     (*jni)->CallVoidMethod(jni, joutput, jOutputStream_write, jarray);
     if (handleException(jni, response, "failed to write request data")) return false;
-    (*jni)->ReleaseByteArrayElements(jni, jarray, bytes, 0);
     (*jni)->DeleteLocalRef(jni, jarray);
     (*jni)->DeleteLocalRef(jni, joutput);
     (*jni)->DeleteLocalRef(jni, jOutputStream);
