@@ -6,4 +6,6 @@ set_target_properties(http PROPERTIES PREFIX "")
 
 if(WIN32)
   target_link_libraries(http wininet)
+elseif(APPLE)
+  target_link_libraries(http objc)
 endif()
