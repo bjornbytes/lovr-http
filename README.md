@@ -1,10 +1,9 @@
 lovr-http
 ===
 
-An HTTP(S) plugin for Lua.  lovr-http's design was inspired by
-[lua-https](https://github.com/love2d/lua-https). Although the name is lovr-http, the library is
-self-contained and doesn't rely on any parts of LÖVR, so it should work in any Lua program.  It was
-just designed to be used as a LÖVR plugin.
+A Lua library for performing HTTP(S) requests.  It's basically a teeny tiny version of
+[lua-https](https://github.com/love2d/lua-https) included by default in [LÖVR](https://lovr.org).
+Although lovr's in the name, the library is self-contained and it should work in any Lua program.
 
 Example
 ---
