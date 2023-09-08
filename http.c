@@ -129,6 +129,12 @@ static bool http_request(http_request_t* req, http_response_t* res) {
     return false;
   }
 
+  // Need default Content-Type for POSTs
+  if (req->data) {
+    const char* contentType = "Content-Type: application/x-www-form-urlencoded\r\n";
+    HttpAddRequestHeadersA(request, contentType, -1L, HTTP_ADDREQ_FLAG_ADD);
+  }
+
   // request headers
   if (req->headerCount >= 0) {
     char* header = NULL;
