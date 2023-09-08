@@ -792,9 +792,16 @@ static int l_http_request(lua_State* L) {
     }
     lua_pop(L, 1);
 
+    lua_getglobal(L, "string");
+    lua_getfield(L, -1, "upper");
     lua_getfield(L, 2, "method");
-    if (!lua_isnil(L, -1)) request.method = lua_tostring(L, -1);
-    lua_pop(L, 1);
+    if (lua_isstring(L, -1)) {
+      lua_call(L, 1, 1);
+      request.method = lua_tostring(L, -1);
+      lua_pop(L, 2);
+    } else {
+      lua_pop(L, 3);
+    }
 
     lua_getfield(L, 2, "headers");
     if (lua_istable(L, -1)) {
