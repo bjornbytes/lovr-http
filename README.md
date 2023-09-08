@@ -72,7 +72,7 @@ Limitations
 - `multipart/form-data` request bodies are not supported.
 - Multi-line response headers are not parsed correctly on all platforms.
 - There is no way to specify a request timeout, because not all platforms support it.
-- There is currently no way to limit or restrict HTTP redirects.
+- There is currently no way to limit or restrict HTTP redirects.  Redirects are generally followed.
 - Adding credentials in the URL is not supported.  Use the `Authorization` request header instead.
 - There are differences in behavior between platforms.  If you encounter any that are causing you
   problems, please open an issue.
