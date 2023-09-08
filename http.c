@@ -489,13 +489,6 @@ static void http_destroy(void) {
   }
 }
 
-static size_t reader(char* buffer, size_t size, size_t count, void* userdata) {
-  char** data = userdata;
-  memcpy(buffer, *data, size * count);
-  *data += size * count;
-  return size * count;
-}
-
 static size_t writer(void* buffer, size_t size, size_t count, void* userdata) {
   http_response_t* response = userdata;
   response->data = realloc(response->data, response->size + size * count);
@@ -539,12 +532,8 @@ static bool http_request(http_request_t* request, http_response_t* response) {
   }
 
   if (request->data && (!request->method || (strcmp(request->method, "GET") && strcmp(request->method, "HEAD")))) {
-    const char* data = request->data;
-    curl_off_t size = request->size;
-    curl.easy_setopt(handle, CURLOPT_POST, 1);
-    curl.easy_setopt(handle, CURLOPT_READDATA, &data);
-    curl.easy_setopt(handle, CURLOPT_READFUNCTION, reader);
-    curl.easy_setopt(handle, CURLOPT_POSTFIELDSIZE_LARGE, size);
+    curl.easy_setopt(handle, CURLOPT_POSTFIELDS, request->data);
+    curl.easy_setopt(handle, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) request->size);
   }
 
   struct curl_slist* headers = NULL;
