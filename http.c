@@ -50,7 +50,7 @@ static bool http_request(http_request_t* req, http_response_t* res) {
     return false;
   }
 
-  // parse URL (rejects <username>[:<password>]@ and :<port>)
+  // parse URL
   size_t length = strlen(req->url);
   const char* url = req->url;
   bool https = false;
@@ -63,28 +63,51 @@ static bool http_request(http_request_t* req, http_response_t* res) {
     length -= 7;
     url += 7;
   } else {
+    res->error = "invalid url scheme";
+    return false;
+  }
+
+  if (strchr(url, '@')) {
     res->error = "invalid url";
     return false;
   }
 
-  if (strchr(url, '@') || strchr(url, ':')) {
-    res->error = "invalid url";
-    return false;
+  char* path = strchr(url, '/');
+  size_t hostLength = path ? path - url : length;
+
+  INTERNET_PORT port = https ? 443 : 80;
+  char* colon = memchr(url, ':', hostLength);
+
+  if (colon) {
+    hostLength = colon - url;
+
+    port = 0;
+    for (char* p = colon + 1; *p && *p != '/'; p++) {
+      if (*p < '0' || *p > '9') {
+        res->error = "invalid url port";
+        return false;
+      } else {
+        port *= 10;
+        port += *p - '0';
+      }
+    }
+
+    if (port <= 0 || port >= 65536) {
+      res->error = "invalid url port";
+      return false;
+    }
   }
 
   char host[256];
-  char* path = strchr(url, '/');
-  size_t hostLength = path ? path - url : length;
   if (sizeof(host) > hostLength) {
     memcpy(host, url, hostLength);
     host[hostLength] = '\0';
   } else {
-    res->error = "invalid url";
+    res->error = "invalid url host";
     return false;
   }
 
   // connection
-  INTERNET_PORT port = https ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT;
   HINTERNET connection = InternetConnectA(internet, host, port, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
   if (!connection) {
     res->error = "system error while setting up request";
