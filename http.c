@@ -541,8 +541,8 @@ static bool http_request(http_request_t* request, http_response_t* response) {
     char* header = NULL;
     size_t capacity = 0;
     for (uint32_t i = 0; i < request->headerCount; i++) {
-      const char* name = *request->headers++;
-      const char* value = *request->headers++;
+      const char* name = request->headers[2 * i + 0];
+      const char* value = request->headers[2 * i + 1];
       const char* format = "%s: %s";
       int length = snprintf(NULL, 0, format, name, value);
       if (length + 1 > capacity) {
