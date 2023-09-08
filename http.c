@@ -737,6 +737,14 @@ static int l_http_request(lua_State* L) {
 
   request.url = luaL_checkstring(L, 1);
 
+  if (!strstr(request.url, "://")) {
+    lua_pushliteral(L, "http://");
+    lua_pushvalue(L, 1);
+    lua_concat(L, 2);
+    lua_replace(L, 1);
+    request.url = lua_tostring(L, 1);
+  }
+
   char* data = NULL;
   size_t size = 0;
   size_t capacity = 0;
