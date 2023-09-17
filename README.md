@@ -29,12 +29,12 @@ status, data, headers = http.request(url, [options])
 
 ### Arguments
 
-`url` is the URL to request.  It should start with the protocol (`http://` or `https://`).
+`url` is the URL to request.  If it doesn't have a protocol, then `http://` will be added.
 
 `options` is optional, and is used for advanced request settings.
 
 `options.method` is the HTTP method to use, also called the verb.  `GET` is used by default if
-there's no data in the request, otherwise it defauls to `POST`.
+there's no data in the request, otherwise it defauls to `POST`.  It will be converted to all-caps.
 
 `options.data` is the data to send to the server, also called the body.  It can be a few different
 types:
