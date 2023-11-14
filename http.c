@@ -500,7 +500,8 @@ static struct {
 static void* library;
 
 static void http_init(void) {
-  library = dlopen("libcurl.so", RTLD_LAZY);
+  library = dlopen("libcurl.so.4", RTLD_LAZY);
+  if (!library) library = dlopen("libcurl.so", RTLD_LAZY);
 
   if (library) {
     FN_FOREACH(FN_LOAD)

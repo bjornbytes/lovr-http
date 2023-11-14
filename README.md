@@ -90,7 +90,7 @@ Implementation
 `lovr-http` uses system-provided HTTP libraries:
 
 - Windows uses wininet.
-- Linux uses curl (must be installed, but most systems have it).
+- Linux uses curl (must install e.g. `libcurl4` package, but most systems have it).
 - Android uses Java's HttpURLConnection via JNI.
 - macOS uses NSURLSession.
 
