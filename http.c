@@ -553,7 +553,11 @@ static bool http_request(http_request_t* request, http_response_t* response) {
   CURL* handle = curl.easy_init();
   if (!handle) return response->error = "curl unavailable", false;
 
+#if LIBCURL_VERSION_NUM >= 0x075500
+  curl.easy_setopt(handle, CURLOPT_PROTOCOLS_STR, "http,https");
+#else
   curl.easy_setopt(handle, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+#endif
   curl.easy_setopt(handle, CURLOPT_URL, request->url);
 
   if (request->method) {
