@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 typedef void fn_header(void* userdata, const char* name, size_t nameLength, const char* value, size_t valueLength);
 
