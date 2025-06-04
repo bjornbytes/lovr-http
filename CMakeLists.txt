@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.5...4.0)
 project(lovr-http)
 
 add_library(http MODULE http.c)
