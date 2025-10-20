@@ -18,6 +18,7 @@ typedef struct {
 
 typedef struct {
   const char* error;
+  char* heapError;
   uint32_t status;
   char* data;
   size_t size;
@@ -285,13 +286,41 @@ static void http_destroy(void) {
   //
 }
 
-static bool handleException(JNIEnv* jni, http_response_t* response, const char* message) {
-  if ((*jni)->ExceptionCheck(jni)) {
-    (*jni)->ExceptionClear(jni);
-    response->error = message;
-    return true;
+static bool handleException(JNIEnv* jni, http_response_t* response, const char* fallback) {
+  if (!(*jni)->ExceptionCheck(jni)) {
+    return false;
   }
-  return false;
+
+  jthrowable exception = (*jni)->ExceptionOccurred(jni);
+
+  if (!exception) {
+    return false;
+  }
+
+  (*jni)->ExceptionClear(jni);
+
+  jclass jThrowable = (*jni)->FindClass(jni, "java/lang/Throwable");
+  jmethodID jThrowable_getMessage = (*jni)->GetMethodID(jni, jThrowable, "getMessage", "()Ljava/lang/String;");
+  jstring jmessage = (*jni)->CallObjectMethod(jni, exception, jThrowable_getMessage);
+
+  if (jmessage) {
+    const char* message = (*jni)->GetStringUTFChars(jni, jmessage, NULL);
+
+    if (message) {
+      response->heapError = strdup(message);
+      (*jni)->ReleaseStringUTFChars(jni, jmessage, message);
+    } else {
+      response->error = fallback;
+    }
+
+    (*jni)->DeleteLocalRef(jni, jmessage);
+  } else {
+    response->error = fallback;
+  }
+
+  (*jni)->DeleteLocalRef(jni, jThrowable);
+  (*jni)->DeleteLocalRef(jni, exception);
+  return true;
 }
 
 static bool http_request(http_request_t* request, http_response_t* response) {
@@ -868,7 +897,8 @@ static int l_http_request(lua_State* L) {
 
   if (!success) {
     lua_pushnil(L);
-    lua_pushstring(L, response.error);
+    lua_pushstring(L, response.heapError ? response.heapError : response.error);
+    free(response.heapError);
     return 2;
   }
 
